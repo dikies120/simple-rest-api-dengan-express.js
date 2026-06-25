@@ -1,14 +1,22 @@
-const express = require("express");
-const routerUsers = require("./router/users.js");
-const routerProduct = require("./router/product.js");
-const middleware = require("./middleware/logs.js");
+import express from "express";
+import db from "./config/database.js";
+import userRouter from "./router/users.js";
+import logRequest from "./middleware/logs.js";
 
 const app = express();
 
-app.use(middleware);
-app.use("/users", routerUsers);
-app.use("/products", routerProduct);
+try {
+    await db.connect();
+    console.log("Database connected successfully");
+} catch (error) {
+    console.error("Error connecting to database:", error);
+}
+
+app.use(logRequest);
+app.use(express.json());
+
+app.use("/users", userRouter);
 
 app.listen(4000, ()=>{
-    console.log("server jalan di port 4000");
+    console.log("server berjalan di port 4000");
 })
